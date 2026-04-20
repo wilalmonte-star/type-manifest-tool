@@ -7,22 +7,11 @@
 <title>Manifest → KML</title>
 <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --bg:#0a0010;--purple:#9b30ff;--purple-dim:#6a1fb5;
-    --orange:#ff6a00;--orange-bright:#ffaa00;--pink:#ff2d78;
-    --text:#f0e0ff;--muted:#7a5a99;--success:#00ffcc;
-    --grid:rgba(155,48,255,0.07);
-  }
+  :root{--bg:#0a0010;--purple:#9b30ff;--purple-dim:#6a1fb5;--orange:#ff6a00;--orange-bright:#ffaa00;--pink:#ff2d78;--text:#f0e0ff;--muted:#7a5a99;--success:#00ffcc;--grid:rgba(155,48,255,0.07);}
   *{margin:0;padding:0;box-sizing:border-box;}
-  body{background:var(--bg);color:var(--text);font-family:'Share Tech Mono',monospace;
-    min-height:100vh;display:flex;flex-direction:column;align-items:center;
-    justify-content:center;padding:24px;overflow-x:hidden;position:relative;}
-  body::before{content:'';position:fixed;inset:0;
-    background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);
-    background-size:36px 36px;pointer-events:none;z-index:0;}
-  body::after{content:'';position:fixed;inset:0;
-    background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.12) 2px,rgba(0,0,0,0.12) 4px);
-    pointer-events:none;z-index:0;}
+  body{background:var(--bg);color:var(--text);font-family:'Share Tech Mono',monospace;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;overflow-x:hidden;position:relative;}
+  body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:36px 36px;pointer-events:none;z-index:0;}
+  body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.12) 2px,rgba(0,0,0,0.12) 4px);pointer-events:none;z-index:0;}
   .orb{position:fixed;border-radius:50%;filter:blur(80px);pointer-events:none;z-index:0;}
   .orb-1{width:400px;height:400px;background:rgba(155,48,255,0.18);top:-100px;left:-100px;animation:drift1 8s ease-in-out infinite alternate;}
   .orb-2{width:300px;height:300px;background:rgba(255,106,0,0.15);bottom:-80px;right:-80px;animation:drift2 10s ease-in-out infinite alternate;}
@@ -30,101 +19,56 @@
   @keyframes drift2{to{transform:translate(-30px,-40px);}}
   .container{width:100%;max-width:600px;position:relative;z-index:1;}
   header{margin-bottom:28px;text-align:center;}
-  .retro-tag{display:inline-block;font-family:'Press Start 2P',monospace;font-size:7px;
-    letter-spacing:0.15em;color:var(--orange-bright);border:1px solid var(--orange);
-    padding:5px 14px;margin-bottom:16px;position:relative;
-    text-shadow:0 0 8px var(--orange);box-shadow:0 0 10px rgba(255,106,0,0.3);}
+  .retro-tag{display:inline-block;font-family:'Press Start 2P',monospace;font-size:7px;letter-spacing:0.15em;color:var(--orange-bright);border:1px solid var(--orange);padding:5px 14px;margin-bottom:16px;position:relative;text-shadow:0 0 8px var(--orange);box-shadow:0 0 10px rgba(255,106,0,0.3);}
   .retro-tag::before{content:'▶';position:absolute;top:50%;left:-16px;transform:translateY(-50%);color:var(--orange);font-size:8px;}
   .retro-tag::after{content:'◀';position:absolute;top:50%;right:-16px;transform:translateY(-50%);color:var(--orange);font-size:8px;}
-  h1{font-family:'Orbitron',sans-serif;font-weight:900;font-size:clamp(26px,6vw,48px);
-    line-height:1.1;letter-spacing:0.05em;
-    background:linear-gradient(135deg,var(--orange-bright) 0%,var(--orange) 40%,var(--purple) 100%);
-    -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
-    animation:titlePulse 3s ease-in-out infinite alternate;}
-  @keyframes titlePulse{
-    from{filter:drop-shadow(0 0 15px rgba(155,48,255,0.4));}
-    to{filter:drop-shadow(0 0 30px rgba(255,106,0,0.6));}}
+  h1{font-family:'Orbitron',sans-serif;font-weight:900;font-size:clamp(26px,6vw,48px);line-height:1.1;letter-spacing:0.05em;background:linear-gradient(135deg,var(--orange-bright) 0%,var(--orange) 40%,var(--purple) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:titlePulse 3s ease-in-out infinite alternate;}
+  @keyframes titlePulse{from{filter:drop-shadow(0 0 15px rgba(155,48,255,0.4));}to{filter:drop-shadow(0 0 30px rgba(255,106,0,0.6));}}
   .subtitle{margin-top:8px;font-size:10px;color:var(--muted);letter-spacing:0.08em;text-transform:uppercase;}
-  .panel{background:linear-gradient(145deg,rgba(30,0,60,0.9),rgba(15,0,30,0.95));
-    border:1px solid var(--purple-dim);border-radius:4px;
-    box-shadow:0 0 0 1px rgba(155,48,255,0.1),0 0 30px rgba(155,48,255,0.15);
-    overflow:hidden;position:relative;}
-  .panel::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;
-    background:linear-gradient(90deg,transparent,var(--purple),var(--orange),transparent);
-    animation:scanLine 3s linear infinite;}
+  .panel{background:linear-gradient(145deg,rgba(30,0,60,0.9),rgba(15,0,30,0.95));border:1px solid var(--purple-dim);border-radius:4px;box-shadow:0 0 0 1px rgba(155,48,255,0.1),0 0 30px rgba(155,48,255,0.15);overflow:hidden;position:relative;}
+  .panel::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--purple),var(--orange),transparent);animation:scanLine 3s linear infinite;}
   @keyframes scanLine{0%{opacity:1}50%{opacity:0.4}100%{opacity:1}}
   .corner{position:absolute;width:12px;height:12px;border-color:var(--orange);border-style:solid;z-index:2;}
-  .corner-tl{top:-1px;left:-1px;border-width:2px 0 0 2px;}
-  .corner-tr{top:-1px;right:-1px;border-width:2px 2px 0 0;}
-  .corner-bl{bottom:-1px;left:-1px;border-width:0 0 2px 2px;}
-  .corner-br{bottom:-1px;right:-1px;border-width:0 2px 2px 0;}
+  .corner-tl{top:-1px;left:-1px;border-width:2px 0 0 2px;}.corner-tr{top:-1px;right:-1px;border-width:2px 2px 0 0;}
+  .corner-bl{bottom:-1px;left:-1px;border-width:0 0 2px 2px;}.corner-br{bottom:-1px;right:-1px;border-width:0 2px 2px 0;}
   .upload-area{padding:40px 32px;text-align:center;}
-  .upload-icon{width:64px;height:64px;margin:0 auto 16px;border:2px solid var(--purple);border-radius:4px;
-    display:flex;align-items:center;justify-content:center;background:rgba(155,48,255,0.1);
-    box-shadow:0 0 16px rgba(155,48,255,0.3);}
+  .upload-icon{width:64px;height:64px;margin:0 auto 16px;border:2px solid var(--purple);border-radius:4px;display:flex;align-items:center;justify-content:center;background:rgba(155,48,255,0.1);box-shadow:0 0 16px rgba(155,48,255,0.3);}
   .upload-icon svg{width:28px;height:28px;stroke:var(--purple);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;filter:drop-shadow(0 0 6px var(--purple));}
   .upload-title{font-family:'Orbitron',sans-serif;font-size:13px;font-weight:700;color:var(--text);margin-bottom:6px;letter-spacing:0.06em;}
   .upload-sub{font-size:11px;color:var(--muted);margin-bottom:20px;}
   .upload-sub span{color:var(--orange-bright);}
-  .choose-btn{display:inline-block;padding:14px 32px;background:transparent;
-    border:2px solid var(--purple);border-radius:4px;color:var(--purple);
-    font-family:'Orbitron',sans-serif;font-size:12px;font-weight:900;letter-spacing:0.1em;
-    text-transform:uppercase;cursor:pointer;
-    text-shadow:0 0 10px var(--purple);box-shadow:0 0 20px rgba(155,48,255,0.3);
-    -webkit-tap-highlight-color:rgba(155,48,255,0.2);}
-  #file-input{position:absolute;width:1px;height:1px;opacity:0;}
+  .choose-btn{display:inline-block;padding:14px 32px;background:transparent;border:2px solid var(--purple);border-radius:4px;color:var(--purple);font-family:'Orbitron',sans-serif;font-size:12px;font-weight:900;letter-spacing:0.1em;text-transform:uppercase;cursor:pointer;text-shadow:0 0 10px var(--purple);box-shadow:0 0 20px rgba(155,48,255,0.3);-webkit-tap-highlight-color:rgba(155,48,255,0.2);}
+  #file-input{position:absolute;width:1px;height:1px;opacity:0.01;}
   .inner{padding:0 18px 18px;}
   .status-card{margin-top:12px;padding:14px 18px;display:none;align-items:center;gap:14px;}
   .status-card.show{display:flex;}
   .s-icon{width:38px;height:38px;border-radius:4px;display:flex;align-items:center;justify-content:center;flex-shrink:0;border:1px solid var(--purple-dim);}
-  .s-icon.loading{background:rgba(155,48,255,0.1);}
-  .s-icon.success{background:rgba(0,255,204,0.08);border-color:var(--success);}
-  .s-icon.error{background:rgba(255,45,120,0.08);border-color:var(--pink);}
+  .s-icon.loading{background:rgba(155,48,255,0.1);}.s-icon.success{background:rgba(0,255,204,0.08);border-color:var(--success);}.s-icon.error{background:rgba(255,45,120,0.08);border-color:var(--pink);}
   .spinner{width:18px;height:18px;border:2px solid rgba(155,48,255,0.2);border-top-color:var(--purple);border-radius:50%;animation:spin 0.8s linear infinite;}
   @keyframes spin{to{transform:rotate(360deg);}}
-  .s-text{flex:1;}
-  .s-title{font-family:'Orbitron',sans-serif;font-size:11px;font-weight:700;letter-spacing:0.05em;margin-bottom:3px;}
-  .s-detail{font-size:10px;color:var(--muted);}
+  .s-text{flex:1;}.s-title{font-family:'Orbitron',sans-serif;font-size:11px;font-weight:700;letter-spacing:0.05em;margin-bottom:3px;}.s-detail{font-size:10px;color:var(--muted);}
   .prog-wrap{margin-top:10px;background:rgba(155,48,255,0.1);border:1px solid rgba(155,48,255,0.2);border-radius:2px;height:6px;display:none;}
-  .prog-wrap.show{display:block;}
-  .prog-bar{height:100%;width:0%;background:linear-gradient(90deg,var(--purple),var(--orange));transition:width 0.3s ease;}
-  .prog-lbl{margin-top:5px;font-size:9px;color:var(--muted);text-align:right;display:none;}
-  .prog-lbl.show{display:block;}
-  .preview{margin-top:12px;display:none;}
-  .preview.show{display:block;}
+  .prog-wrap.show{display:block;}.prog-bar{height:100%;width:0%;background:linear-gradient(90deg,var(--purple),var(--orange));transition:width 0.3s ease;}
+  .prog-lbl{margin-top:5px;font-size:9px;color:var(--muted);text-align:right;display:none;}.prog-lbl.show{display:block;}
+  .preview{margin-top:12px;display:none;}.preview.show{display:block;}
   .prev-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;}
   .prev-lbl{font-family:'Press Start 2P',monospace;font-size:7px;color:var(--muted);text-transform:uppercase;}
-  .badge{font-family:'Orbitron',sans-serif;font-size:10px;font-weight:700;color:var(--orange-bright);
-    background:rgba(255,106,0,0.1);border:1px solid rgba(255,106,0,0.3);padding:3px 10px;border-radius:2px;}
-  .prev-box{background:rgba(5,0,12,0.8);border:1px solid rgba(155,48,255,0.25);border-radius:4px;
-    padding:12px 14px;max-height:180px;overflow-y:auto;font-size:10.5px;line-height:1.9;color:rgba(200,170,255,0.75);}
-  .prev-box::-webkit-scrollbar{width:4px;}
-  .prev-box::-webkit-scrollbar-thumb{background:var(--purple-dim);border-radius:2px;}
-  .arow{display:flex;gap:8px;border-bottom:1px solid rgba(155,48,255,0.08);padding:2px 0;}
-  .arow:last-child{border-bottom:none;}
-  .anum{color:var(--purple);font-size:9px;min-width:22px;flex-shrink:0;}
-  .atxt{flex:1;}
-  .acoord{font-size:9px;color:rgba(0,255,204,0.5);flex-shrink:0;white-space:nowrap;}
-  .afail{font-size:9px;color:rgba(255,45,120,0.5);flex-shrink:0;}
+  .badge{font-family:'Orbitron',sans-serif;font-size:10px;font-weight:700;color:var(--orange-bright);background:rgba(255,106,0,0.1);border:1px solid rgba(255,106,0,0.3);padding:3px 10px;border-radius:2px;}
+  .prev-box{background:rgba(5,0,12,0.8);border:1px solid rgba(155,48,255,0.25);border-radius:4px;padding:12px 14px;max-height:180px;overflow-y:auto;font-size:10.5px;line-height:1.9;color:rgba(200,170,255,0.75);}
+  .prev-box::-webkit-scrollbar{width:4px;}.prev-box::-webkit-scrollbar-thumb{background:var(--purple-dim);border-radius:2px;}
+  .arow{display:flex;gap:8px;border-bottom:1px solid rgba(155,48,255,0.08);padding:2px 0;}.arow:last-child{border-bottom:none;}
+  .anum{color:var(--purple);font-size:9px;min-width:22px;flex-shrink:0;}.atxt{flex:1;}
+  .acoord{font-size:9px;color:rgba(0,255,204,0.5);flex-shrink:0;white-space:nowrap;}.afail{font-size:9px;color:rgba(255,45,120,0.5);flex-shrink:0;}
   .stats{display:flex;gap:10px;margin-top:10px;}
   .stat{flex:1;background:rgba(155,48,255,0.06);border:1px solid rgba(155,48,255,0.2);border-radius:4px;padding:8px 12px;text-align:center;}
-  .sval{font-family:'Orbitron',sans-serif;font-size:18px;font-weight:900;color:var(--orange-bright);}
-  .slbl{font-family:'Press Start 2P',monospace;font-size:6px;color:var(--muted);margin-top:3px;}
-  .sval.ok{color:var(--success);}
-  .sval.bad{color:var(--pink);}
-  .dl-btn{margin-top:14px;width:100%;padding:16px;background:transparent;
-    border:2px solid var(--orange);border-radius:4px;color:var(--orange-bright);
-    font-family:'Orbitron',sans-serif;font-size:12px;font-weight:900;letter-spacing:0.1em;
-    cursor:pointer;display:none;align-items:center;justify-content:center;gap:10px;
-    text-transform:uppercase;text-shadow:0 0 10px var(--orange);
-    box-shadow:0 0 20px rgba(255,106,0,0.2);transition:all 0.2s;}
-  .dl-btn.show{display:flex;}
-  .dl-btn:hover{background:rgba(255,106,0,0.08);transform:translateY(-2px);}
+  .sval{font-family:'Orbitron',sans-serif;font-size:18px;font-weight:900;color:var(--orange-bright);}.slbl{font-family:'Press Start 2P',monospace;font-size:6px;color:var(--muted);margin-top:3px;}
+  .sval.ok{color:var(--success);}.sval.bad{color:var(--pink);}
+  .dl-btn{margin-top:14px;width:100%;padding:16px;background:transparent;border:2px solid var(--orange);border-radius:4px;color:var(--orange-bright);font-family:'Orbitron',sans-serif;font-size:12px;font-weight:900;letter-spacing:0.1em;cursor:pointer;display:none;align-items:center;justify-content:center;gap:10px;text-transform:uppercase;text-shadow:0 0 10px var(--orange);box-shadow:0 0 20px rgba(255,106,0,0.2);transition:all 0.2s;}
+  .dl-btn.show{display:flex;}.dl-btn:active{background:rgba(255,106,0,0.1);}
   .dl-btn svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;}
-  .reset{display:block;text-align:center;margin-top:14px;font-size:10px;color:var(--muted);cursor:pointer;text-transform:uppercase;letter-spacing:0.08em;}
-  .reset:hover{color:var(--purple);}
-  .errmsg{margin-top:12px;padding:12px 16px;background:rgba(255,45,120,0.06);border:1px solid rgba(255,45,120,0.25);
-    border-radius:4px;font-size:11px;color:var(--pink);display:none;}
+  .reset-lnk{display:block;text-align:center;margin-top:14px;font-size:10px;color:var(--muted);cursor:pointer;text-transform:uppercase;letter-spacing:0.08em;}
+  .reset-lnk:hover{color:var(--purple);}
+  .errmsg{margin-top:12px;padding:12px 16px;background:rgba(255,45,120,0.06);border:1px solid rgba(255,45,120,0.25);border-radius:4px;font-size:11px;color:var(--pink);display:none;}
   .errmsg.show{display:block;}
   footer{margin-top:28px;text-align:center;font-family:'Press Start 2P',monospace;font-size:6px;color:rgba(155,48,255,0.3);letter-spacing:0.15em;}
 </style>
@@ -138,352 +82,205 @@
     <h1>MANIFEST<br>→ KML</h1>
     <p class="subtitle">Extract · Geocode · Export to Google Maps</p>
   </header>
-
   <div class="panel">
-    <div class="corner corner-tl"></div>
-    <div class="corner corner-tr"></div>
-    <div class="corner corner-bl"></div>
-    <div class="corner corner-br"></div>
-
-```
-<div class="upload-area" id="upload-area">
-  <input type="file" id="file-input" accept=".xls,.xlsx">
-  <div class="upload-icon">
-    <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-  </div>
-  <div class="upload-title">SELECT MANIFEST FILE</div>
-  <div class="upload-sub">tap below · <span>.XLS / .XLSX</span></div>
-  <label for="file-input" class="choose-btn">📂 &nbsp;CHOOSE FILE</label>
-</div>
-
-<div class="inner">
-  <div class="status-card" id="scard">
-    <div class="s-icon loading" id="sicon"><div class="spinner"></div></div>
-    <div class="s-text">
-      <div class="s-title" id="stitle">PROCESSING…</div>
-      <div class="s-detail" id="sdetail"></div>
+    <div class="corner corner-tl"></div><div class="corner corner-tr"></div>
+    <div class="corner corner-bl"></div><div class="corner corner-br"></div>
+    <div class="upload-area" id="upload-area">
+      <input type="file" id="file-input" accept=".xls,.xlsx">
+      <div class="upload-icon">
+        <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+      </div>
+      <div class="upload-title">SELECT MANIFEST FILE</div>
+      <div class="upload-sub">tap below · <span>.XLS / .XLSX</span></div>
+      <label for="file-input" class="choose-btn">📂 &nbsp;CHOOSE FILE</label>
     </div>
-  </div>
-  <div class="prog-wrap" id="pwrap"><div class="prog-bar" id="pbar"></div></div>
-  <div class="prog-lbl" id="plbl"></div>
-  <div class="errmsg" id="errmsg"></div>
-
-  <div class="preview" id="preview">
-    <div class="stats">
-      <div class="stat"><div class="sval" id="stot">0</div><div class="slbl">TOTAL</div></div>
-      <div class="stat"><div class="sval ok" id="sok">0</div><div class="slbl">GEOCODED</div></div>
-      <div class="stat"><div class="sval bad" id="sfail">0</div><div class="slbl">FAILED</div></div>
+    <div class="inner">
+      <div class="status-card" id="scard">
+        <div class="s-icon loading" id="sicon"><div class="spinner"></div></div>
+        <div class="s-text"><div class="s-title" id="stitle">PROCESSING…</div><div class="s-detail" id="sdetail"></div></div>
+      </div>
+      <div class="prog-wrap" id="pwrap"><div class="prog-bar" id="pbar"></div></div>
+      <div class="prog-lbl" id="plbl"></div>
+      <div class="errmsg" id="errmsg"></div>
+      <div class="preview" id="preview">
+        <div class="stats">
+          <div class="stat"><div class="sval" id="stot">0</div><div class="slbl">TOTAL</div></div>
+          <div class="stat"><div class="sval ok" id="sok">0</div><div class="slbl">GEOCODED</div></div>
+          <div class="stat"><div class="sval bad" id="sfail">0</div><div class="slbl">FAILED</div></div>
+        </div>
+        <div class="prev-hdr" style="margin-top:12px;">
+          <span class="prev-lbl">Results</span>
+          <span class="badge" id="badge">0 STOPS</span>
+        </div>
+        <div class="prev-box" id="prevbox"></div>
+      </div>
+      <button class="dl-btn" id="dlbtn">
+        <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        DOWNLOAD KML
+      </button>
+      <a class="reset-lnk" id="resetlnk" style="display:none">[ PROCESS ANOTHER FILE ]</a>
     </div>
-    <div class="prev-hdr" style="margin-top:12px;">
-      <span class="prev-lbl">Results</span>
-      <span class="badge" id="badge">0 STOPS</span>
-    </div>
-    <div class="prev-box" id="prevbox"></div>
-  </div>
-
-  <button class="dl-btn" id="dlbtn">
-    <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-    DOWNLOAD KML
-  </button>
-  <a class="reset" id="reset" style="display:none">[ PROCESS ANOTHER FILE ]</a>
-</div>
-```
-
   </div>
 </div>
 <footer>COMBINED MANIFEST · GEOCODE + KML · 2026</footer>
 
 <script>
-// ── Minimal XLSX/XLS parser - no external library needed ──
-// Parses .xlsx (ZIP+XML) and .xls (HTML-table-based export) natively
+var kmlContent='', outFile='manifest.kml', aborted=false;
+var fi=document.getElementById('file-input');
+var scard=document.getElementById('scard');
+var sicon=document.getElementById('sicon');
+var stitle=document.getElementById('stitle');
+var sdetail=document.getElementById('sdetail');
+var pwrap=document.getElementById('pwrap');
+var pbar=document.getElementById('pbar');
+var plbl=document.getElementById('plbl');
+var errmsg=document.getElementById('errmsg');
+var preview=document.getElementById('preview');
+var prevbox=document.getElementById('prevbox');
+var badge=document.getElementById('badge');
+var dlbtn=document.getElementById('dlbtn');
+var resetlnk=document.getElementById('resetlnk');
+var stot=document.getElementById('stot');
+var sok=document.getElementById('sok');
+var sfail=document.getElementById('sfail');
+var uploadArea=document.getElementById('upload-area');
 
-var kmlContent = '', outFile = 'manifest.kml', aborted = false;
-
-var $ = function(id){ return document.getElementById(id); };
-var fileInput  = $('file-input');
-var scard      = $('scard');
-var sicon      = $('sicon');
-var stitle     = $('stitle');
-var sdetail    = $('sdetail');
-var pwrap      = $('pwrap');
-var pbar       = $('pbar');
-var plbl       = $('plbl');
-var errmsg     = $('errmsg');
-var preview    = $('preview');
-var prevbox    = $('prevbox');
-var badge      = $('badge');
-var dlbtn      = $('dlbtn');
-var reset      = $('reset');
-var stot       = $('stot');
-var sok        = $('sok');
-var sfail      = $('sfail');
-var uploadArea = $('upload-area');
-
-fileInput.addEventListener('change', function(e){
-  if(e.target.files && e.target.files[0]) processFile(e.target.files[0]);
+fi.addEventListener('change',function(e){
+  if(e.target.files&&e.target.files[0]) processFile(e.target.files[0]);
 });
 
-reset.addEventListener('click', function(){
+resetlnk.addEventListener('click',function(){
   aborted=true; kmlContent='';
   [scard,pwrap,plbl,preview,errmsg].forEach(function(el){el.classList.remove('show');});
   dlbtn.classList.remove('show');
-  reset.style.display='none';
-  fileInput.value='';
+  resetlnk.style.display='none';
+  fi.value='';
   uploadArea.style.display='';
   prevbox.innerHTML='';
 });
 
 function showErr(msg){
-  scard.classList.remove('show'); pwrap.classList.remove('show'); plbl.classList.remove('show');
-  errmsg.textContent='⚠ '+msg; errmsg.classList.add('show');
-  reset.style.display='block';
+  scard.classList.remove('show');pwrap.classList.remove('show');plbl.classList.remove('show');
+  errmsg.textContent='⚠ '+msg;errmsg.classList.add('show');
+  resetlnk.style.display='block';
 }
 
-function delay(ms){ return new Promise(function(r){setTimeout(r,ms);}); }
+function delay(ms){return new Promise(function(r){setTimeout(r,ms);});}
 
 function geocode(addr){
   return fetch('https://nominatim.openstreetmap.org/search?format=json&limit=1&q='+encodeURIComponent(addr),{headers:{'Accept-Language':'en'}})
     .then(function(r){return r.json();})
-    .then(function(d){ return (d&&d.length)?{lat:parseFloat(d[0].lat),lon:parseFloat(d[0].lon)}:null; })
+    .then(function(d){return(d&&d.length)?{lat:parseFloat(d[0].lat),lon:parseFloat(d[0].lon)}:null;})
     .catch(function(){return null;});
 }
 
-function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 
-function buildKML(stops, name){
+function buildKML(stops,name){
   var k='<?xml version="1.0" encoding="UTF-8"?>\n<kml xmlns="http://www.opengis.net/kml/2.2">\n<Document>\n';
   k+='  <name>'+esc(name)+'</name>\n';
-  k+='  <Style id="pin"><IconStyle><color>ff0050ff</color><scale>1.1</scale><Icon><href>http://maps.google.com/mapfiles/kml/paddle/red-circle.png</href></Icon></IconStyle></Style>\n';
+  k+='  <Style id="pin"><IconStyle><color>ff0050ff</color><scale>1.1</scale><Icon><href>http://maps.google.com/mapfiles/kml/paddle/red-circle.png</href></Icon></IconStyle><LabelStyle><scale>0.8</scale></LabelStyle></Style>\n';
 
 stops.forEach(function(s,i){
-if(!s.geo) return;
+if(!s.geo)return;
 k+=’  <Placemark><name>Stop ‘+(i+1)+’</name><description>’+esc(s.address)+’</description>’;
 k+=’<styleUrl>#pin</styleUrl><Point><coordinates>’+s.geo.lon+’,’+s.geo.lat+’,0</coordinates></Point></Placemark>\n’;
 });
 return k+’</Document>\n</kml>’;
 }
 
-// ── Parse XLSX (ZIP file containing XML) ──
-function parseXLSX(buffer){
-return new Promise(function(resolve, reject){
-try {
-// Use DecompressionStream if available (modern browsers)
-var zip = {};
-var view = new Uint8Array(buffer);
-// Find all files in ZIP by scanning local file headers (PK\x03\x04)
-var i = 0;
-while(i < view.length - 4){
-if(view[i]===0x50 && view[i+1]===0x4B && view[i+2]===0x03 && view[i+3]===0x04){
-var fnLen = view[i+26] | (view[i+27]<<8);
-var extraLen = view[i+28] | (view[i+29]<<8);
-var compSize = view[i+18] | (view[i+19]<<8) | (view[i+20]<<16) | (view[i+21]<<24);
-var uncompSize = view[i+22] | (view[i+23]<<8) | (view[i+24]<<16) | (view[i+25]<<24);
-var compression = view[i+8] | (view[i+9]<<8);
-var fnBytes = view.slice(i+30, i+30+fnLen);
-var fn = ‘’;
-for(var b=0;b<fnBytes.length;b++) fn += String.fromCharCode(fnBytes[b]);
-var dataStart = i+30+fnLen+extraLen;
-var compData = view.slice(dataStart, dataStart+compSize);
-zip[fn] = {compressed: compression===8, data: compData, size: uncompSize};
-i = dataStart + compSize;
-} else { i++; }
+// ── Core parser: reads binary .xls by extracting text strings ──
+// Works specifically with Combined Manifest format (CDFV2 OLE binary)
+function parseManifestXLS(buffer){
+// Decode bytes as latin-1 (covers all 256 byte values)
+var bytes=new Uint8Array(buffer);
+var text=’’;
+for(var i=0;i<bytes.length;i++) text+=String.fromCharCode(bytes[i]);
+
+// Split on non-printable bytes to get string tokens
+var tokens=text.split(/[\x00-\x08\x0b\x0c\x0e-\x1f\x7f-\xff]+/);
+tokens=tokens.map(function(s){return s.trim();}).filter(function(s){return s.length>1;});
+
+// Find where Stop Details data begins (after “Close” header)
+var start=0;
+for(var i=0;i<tokens.length;i++){
+if(tokens[i]===‘Close’){start=i+1;break;}
+}
+if(start===0){
+// Fallback: find after column headers
+for(var i=0;i<tokens.length;i++){
+if(tokens[i]===‘Address Line 1’){start=i+4;break;}
+}
 }
 
+var data=tokens.slice(start);
+
+// Regex patterns
+var streetRe=/^\d+\s+[A-Z]/;
+var zipRe=/^\d{5}(-\d{4})?$/;
+var sidRe=/^\d{3,4}$/;
+var stateRe=/^[A-Z]{2}$/;
+var timeRe=/^\d{2}:\d{2}$/;
+var skipWords=[‘Delivery’,‘Pickup’,‘Y’,‘N’];
+
+var addresses=[];
+var lastCity=‘SMITHTOWN’;
+var lastState=‘NY’;
+var i=0;
+
+while(i<data.length){
+var tok=data[i];
+
 ```
-  // Find the shared strings and sheet
-  var sharedStrings = [];
-  var ssFile = zip['xl/sharedStrings.xml'];
-  if(ssFile){
-    var ssText = inflate(ssFile);
-    var matches = ssText.match(/<t[^>]*>([^<]*)<\/t>/g)||[];
-    matches.forEach(function(m){ sharedStrings.push(m.replace(/<[^>]+>/g,'')); });
+// Skip known non-data tokens
+if(skipWords.indexOf(tok)>=0||timeRe.test(tok)){i++;continue;}
+
+if(streetRe.test(tok)){
+  var street=tok;
+  var city=lastCity;
+  var state=lastState;
+  var zip='';
+  var addr2='';
+
+  // Scan next few tokens for city/state/zip
+  var j=i+1;
+  var scanned=0;
+  while(j<data.length&&scanned<5){
+    var nxt=data[j];
+    if(zipRe.test(nxt)){zip=nxt;j++;scanned++;}
+    else if(stateRe.test(nxt)&&nxt.length===2&&['NY','NJ','CT','PA','MA','FL','CA'].indexOf(nxt)>=0){
+      state=nxt;lastState=state;j++;scanned++;
+    }
+    else if(sidRe.test(nxt)||timeRe.test(nxt)||streetRe.test(nxt)){break;}
+    else if(skipWords.indexOf(nxt)>=0){break;}
+    else if(nxt.length>2&&/^[A-Z]/.test(nxt)&&!zipRe.test(nxt)&&!sidRe.test(nxt)){
+      // Could be city name or address line 2
+      if(scanned===0&&/^\d/.test(nxt)){addr2=nxt;}
+      else{city=nxt;lastCity=city;}
+      j++;scanned++;
+    }
+    else{break;}
   }
 
-  // Find correct sheet (Stop Details or last sheet)
-  var sheetFile = null, sheetName = '';
-  var wbXml = inflate(zip['xl/workbook.xml']||{data:new Uint8Array(),compressed:false});
-  var sheetDefs = wbXml.match(/<sheet[^>]+\/>/g)||[];
-  var targetIdx = sheetDefs.length; // default last
-  sheetDefs.forEach(function(sd,idx){
-    var nm = (sd.match(/name="([^"]+)"/))||[];
-    if(nm[1] && (nm[1].toLowerCase().includes('stop')||nm[1].toLowerCase().includes('detail'))) targetIdx=idx+1;
-  });
-  var sheetKey = 'xl/worksheets/sheet'+targetIdx+'.xml';
-  if(!zip[sheetKey]) sheetKey = 'xl/worksheets/sheet'+sheetDefs.length+'.xml';
-  if(!zip[sheetKey]){
-    // try any sheet
-    Object.keys(zip).forEach(function(k){ if(k.match(/xl\/worksheets\/sheet\d+\.xml/)) sheetKey=k; });
-  }
-
-  var xml = inflate(zip[sheetKey]||{data:new Uint8Array(),compressed:false});
-  var rows = [];
-  var rowMatches = xml.match(/<row[^>]*>([\s\S]*?)<\/row>/g)||[];
-  rowMatches.forEach(function(rowXml){
-    var cells = [];
-    var cellMatches = rowXml.match(/<c[^>]*>[\s\S]*?<\/c>/g)||[];
-    cellMatches.forEach(function(cellXml){
-      var tAttr = (cellXml.match(/t="([^"]*)"/))||[];
-      var vMatch = cellXml.match(/<v>([^<]*)<\/v>/);
-      var val = '';
-      if(vMatch){
-        if(tAttr[1]==='s'){ val = sharedStrings[parseInt(vMatch[1])]||''; }
-        else { val = vMatch[1]; }
-      }
-      // Get column reference to place correctly
-      var rMatch = cellXml.match(/r="([A-Z]+)\d+"/);
-      var col = 0;
-      if(rMatch){ var c=rMatch[1]; for(var ci=0;ci<c.length;ci++) col=col*26+(c.charCodeAt(ci)-64); col--; }
-      while(cells.length < col) cells.push('');
-      cells.push(val);
-    });
-    rows.push(cells);
-  });
-  resolve(rows);
-} catch(e){ reject(e); }
+  var full=street;
+  if(addr2) full+=' '+addr2;
+  full+=', '+city+', '+state;
+  if(zip) full+=' '+zip;
+  addresses.push(full);
+  i++;
+} else {
+  i++;
+}
 ```
 
-});
 }
-
-// ── Inflate (decompress) ZIP entry ──
-function inflate(entry){
-if(!entry || !entry.data || entry.data.length===0) return ‘’;
-var bytes = entry.data;
-if(!entry.compressed){
-var s=’’; for(var i=0;i<bytes.length;i++) s+=String.fromCharCode(bytes[i]); return s;
-}
-// Use pako-free raw inflate via DecompressionStream (Safari 16.4+)
-try {
-// Synchronous fallback: manually decode using raw inflate
-return rawInflate(bytes);
-} catch(e){ return ‘’; }
-}
-
-// Raw DEFLATE decompressor (handles ZIP deflate entries)
-function rawInflate(data){
-// Try TextDecoder first for uncompressed
-try {
-var ds = new DecompressionStream(‘deflate-raw’);
-var writer = ds.writable.getWriter();
-var reader = ds.readable.getReader();
-writer.write(data);
-writer.close();
-var chunks = [], done = false;
-var result = ‘’;
-// This is async but we need sync — use XMLHttpRequest blob trick
-var blob = new Blob([data]);
-var xhr = new XMLHttpRequest();
-xhr.open(‘GET’, URL.createObjectURL(blob), false);
-// Can’t decompress synchronously easily — return raw for XML detection
-return new TextDecoder().decode(data);
-} catch(e){
-return new TextDecoder().decode(data);
-}
-}
-
-// ── Parse XLS (old binary format — but manifests exported as HTML/XML in disguise) ──
-// Many systems export .xls files that are actually HTML tables or XML spreadsheets
-function parseXLS(buffer){
-return new Promise(function(resolve){
-var text = ‘’;
-try { text = new TextDecoder(‘utf-8’).decode(buffer); } catch(e){}
-if(!text) try { text = new TextDecoder(‘windows-1252’).decode(buffer); } catch(e){}
-
-```
-// Case 1: XML Spreadsheet (most common for manifest exports)
-if(text.indexOf('<?xml') !== -1 || text.indexOf('<Workbook') !== -1 || text.indexOf('<ss:Workbook') !== -1){
-  resolve(parseXMLSpreadsheet(text));
-  return;
-}
-// Case 2: HTML table disguised as .xls
-if(text.indexOf('<html') !== -1 || text.indexOf('<table') !== -1 || text.indexOf('<HTML') !== -1){
-  resolve(parseHTMLTable(text));
-  return;
-}
-// Case 3: Try XML anyway
-if(text.indexOf('<Row') !== -1 || text.indexOf('<Cell') !== -1){
-  resolve(parseXMLSpreadsheet(text));
-  return;
-}
-resolve([]);
-```
-
-});
-}
-
-function parseXMLSpreadsheet(xml){
-var rows = [];
-// Match rows - handle both ss: namespaced and plain
-var rowRe = /<(?:ss:)?Row[^>]*>([\s\S]*?)</(?:ss:)?Row>/gi;
-var cellRe = /<(?:ss:)?Cell[^>]*>([\s\S]*?)</(?:ss:)?Cell>/gi;
-var dataRe = /<(?:ss:)?Data[^>]*>([^<]*)</(?:ss:)?Data>/i;
-var rowMatch;
-while((rowMatch = rowRe.exec(xml)) !== null){
-var row = [], cellMatch;
-cellRe.lastIndex = 0;
-var rowContent = rowMatch[1];
-while((cellMatch = cellRe.exec(rowContent)) !== null){
-var dataMatch = dataRe.exec(cellMatch[1]);
-row.push(dataMatch ? dataMatch[1].trim() : ‘’);
-}
-if(row.length > 0) rows.push(row);
-}
-return rows;
-}
-
-function parseHTMLTable(html){
-var rows = [];
-var trRe = /<tr[^>]*>([\s\S]*?)</tr>/gi;
-var tdRe = /<t[dh][^>]*>([\s\S]*?)</t[dh]>/gi;
-var tagRe = /<[^>]+>/g;
-var trMatch;
-while((trMatch = trRe.exec(html)) !== null){
-var row = [], tdMatch;
-tdRe.lastIndex = 0;
-while((tdMatch = tdRe.exec(trMatch[1])) !== null){
-row.push(tdMatch[1].replace(tagRe,’’).trim());
-}
-if(row.length > 0) rows.push(row);
-}
-return rows;
-}
-
-function extractAddresses(rows){
-if(!rows || rows.length < 2) return [];
-var header = rows[0].map(function(h){ return String(h).toLowerCase().trim(); });
-
-var c1 = header.findIndex(function(h){ return h.includes(‘address’) && (h.includes(‘1’)||h===‘address’); });
-var c2 = header.findIndex(function(h){ return h.includes(‘address’) && h.includes(‘2’); });
-var cc = header.findIndex(function(h){ return h===‘city’; });
-var cs = header.findIndex(function(h){ return h===‘state’||h===‘state_code’; });
-var cz = header.findIndex(function(h){ return h.includes(‘postal’)||h.includes(‘zip’); });
-
-if(c1<0) c1=3; if(c2<0) c2=4; if(cc<0) cc=5; if(cs<0) cs=6; if(cz<0) cz=7;
-
-var addrs = [];
-for(var i=1;i<rows.length;i++){
-var r=rows[i];
-var v1=String(r[c1]||’’).trim(); if(!v1) continue;
-var v2=String(r[c2]||’’).trim();
-var vc=String(r[cc]||’’).trim();
-var vs=String(r[cs]||’’).trim();
-var vz=String(r[cz]||’’).trim();
-var a=v1;
-if(v2) a+=’ ‘+v2;
-if(vc) a+=’ ‘+vc;
-if(vs) a+=’, ‘+vs;
-if(vz) a+=’ ’+vz;
-addrs.push(a);
-}
-return addrs;
+return addresses;
 }
 
 async function processFile(file){
-aborted=false; kmlContent=’’;
-errmsg.classList.remove(‘show’);
-preview.classList.remove(‘show’);
-dlbtn.classList.remove(‘show’);
-reset.style.display=‘none’;
+aborted=false;kmlContent=’’;
+errmsg.classList.remove(‘show’);preview.classList.remove(‘show’);
+dlbtn.classList.remove(‘show’);resetlnk.style.display=‘none’;
 prevbox.innerHTML=’’;
 scard.classList.add(‘show’);
 sicon.className=‘s-icon loading’;
@@ -491,52 +288,45 @@ sicon.innerHTML=’<div class="spinner"></div>’;
 stitle.textContent=‘READING FILE…’;
 sdetail.textContent=file.name;
 uploadArea.style.display=‘none’;
+outFile=file.name.replace(/.(xls|xlsx)$/i,’’)+’.kml’;
 
-outFile = file.name.replace(/.(xls|xlsx)$/i,’’)+’.kml’;
-var isXLSX = file.name.toLowerCase().endsWith(’.xlsx’);
-
-var reader = new FileReader();
-reader.onerror = function(){ showErr(‘Could not read file.’); };
-
-reader.onload = async function(e){
-try {
-stitle.textContent=‘PARSING…’;
-var rows;
-if(isXLSX){
-rows = await parseXLSX(e.target.result);
-} else {
-rows = await parseXLS(e.target.result);
-}
+var reader=new FileReader();
+reader.onerror=function(){showErr(‘Could not read file. Try again.’);};
+reader.onload=async function(e){
+try{
+stitle.textContent=‘PARSING MANIFEST…’;
+sdetail.textContent=‘Extracting addresses’;
 
 ```
-  // Find the Stop Details sheet rows if we got all rows mixed
-  var addresses = extractAddresses(rows);
+  var addresses=parseManifestXLS(e.target.result);
 
-  if(!addresses.length){
-    showErr('No addresses found. Make sure this is a Combined Manifest .xls file.');
+  if(!addresses||!addresses.length){
+    showErr('No addresses found. Make sure this is a Combined Manifest file.');
     return;
   }
 
-  // Geocode
+  // Geocode phase
   stitle.textContent='GEOCODING…';
-  pwrap.classList.add('show'); plbl.classList.add('show');
+  pwrap.classList.add('show');plbl.classList.add('show');
   preview.classList.add('show');
   badge.textContent=addresses.length+' STOPS';
-  stot.textContent=addresses.length; sok.textContent='0'; sfail.textContent='0';
+  stot.textContent=addresses.length;
+  sok.textContent='0';sfail.textContent='0';
 
-  var stops=[], okC=0, failC=0;
+  var stops=[],okC=0,failC=0;
+
   for(var j=0;j<addresses.length;j++){
-    if(aborted) return;
+    if(aborted)return;
     var addr=addresses[j];
     var geo=await geocode(addr);
     stops.push({address:addr,geo:geo});
-    if(geo) okC++; else failC++;
+    if(geo)okC++;else failC++;
 
     var pct=Math.round(((j+1)/addresses.length)*100);
     pbar.style.width=pct+'%';
     plbl.textContent=(j+1)+' / '+addresses.length+' geocoded';
-    sdetail.textContent='Stop '+(j+1)+': '+addr.substring(0,35)+'…';
-    sok.textContent=okC; sfail.textContent=failC;
+    sdetail.textContent='Stop '+(j+1)+': '+addr.substring(0,38);
+    sok.textContent=okC;sfail.textContent=failC;
 
     var div=document.createElement('div');
     div.className='arow';
@@ -546,32 +336,30 @@ rows = await parseXLS(e.target.result);
            :'<span class="afail">NO MATCH</span>');
     prevbox.appendChild(div);
     prevbox.scrollTop=prevbox.scrollHeight;
-    if(j<addresses.length-1) await delay(1100);
+    if(j<addresses.length-1)await delay(1100);
   }
 
-  kmlContent=buildKML(stops, file.name.replace(/\.(xls|xlsx)$/i,''));
+  kmlContent=buildKML(stops,file.name.replace(/\.(xls|xlsx)$/i,''));
   sicon.className='s-icon success';
   sicon.innerHTML='<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00ffcc" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
   stitle.textContent='KML READY!';
   sdetail.textContent=okC+' pins mapped · '+failC+' failed';
   dlbtn.classList.add('show');
-  reset.style.display='block';
+  resetlnk.style.display='block';
 
-} catch(err){ showErr('Parse error: '+err.message); }
+}catch(err){showErr('Error: '+err.message);}
 ```
 
 };
-
-// Read as ArrayBuffer for both formats
 reader.readAsArrayBuffer(file);
 }
 
-dlbtn.addEventListener(‘click’, function(){
-if(!kmlContent) return;
+dlbtn.addEventListener(‘click’,function(){
+if(!kmlContent)return;
 var enc=‘data:application/vnd.google-earth.kml+xml;charset=utf-8,’+encodeURIComponent(kmlContent);
 var a=document.createElement(‘a’);
-a.href=enc; a.download=outFile;
-document.body.appendChild(a); a.click(); document.body.removeChild(a);
+a.href=enc;a.download=outFile;
+document.body.appendChild(a);a.click();document.body.removeChild(a);
 });
 </script>
 
