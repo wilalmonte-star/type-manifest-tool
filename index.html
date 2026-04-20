@@ -382,8 +382,8 @@ var reader = new FileReader();
 reader.onload = async function(e) {
   try {
     statusTitle.textContent = 'PARSING WORKSHEET…';
-    var data = new Uint8Array(e.target.result);
-    var workbook = XLSX.read(data, { type: 'array' });
+    // Use binary string — works with both .xls and .xlsx on Safari iOS
+    var workbook = XLSX.read(e.target.result, { type: 'binary' });
 
     var sheetName = workbook.SheetNames.find(function(n) {
       return n.toLowerCase().includes('stop') || n.toLowerCase().includes('detail');
@@ -468,7 +468,7 @@ reader.onload = async function(e) {
   } catch(err) { showError('Error: ' + err.message); }
 };
 reader.onerror = function() { showError('Could not read file.'); };
-reader.readAsArrayBuffer(file);
+reader.readAsBinaryString(file);
 ```
 
 }
