@@ -177,12 +177,13 @@
 
 ```
 <div class="drop-zone" id="drop-zone">
-  <input type="file" id="file-input" accept=".xls,.xlsx">
+  <input type="file" id="file-input" accept=".xls,.xlsx" style="display:none">
   <div class="drop-icon-wrap">
     <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
   </div>
-  <div class="drop-text">DROP MANIFEST FILE</div>
-  <div class="drop-sub">tap to browse &nbsp;·&nbsp; <span>.XLS / .XLSX</span></div>
+  <div class="drop-text">SELECT MANIFEST FILE</div>
+  <div class="drop-sub" style="margin-bottom:20px">tap below to browse &nbsp;·&nbsp; <span>.XLS / .XLSX</span></div>
+  <label for="file-input" style="display:inline-block;padding:14px 32px;background:transparent;border:2px solid var(--purple);border-radius:4px;color:var(--purple);font-family:'Orbitron',sans-serif;font-size:12px;font-weight:900;letter-spacing:0.1em;text-transform:uppercase;cursor:pointer;text-shadow:0 0 10px var(--purple);box-shadow:0 0 20px rgba(155,48,255,0.3);">📂 &nbsp;CHOOSE FILE</label>
 </div>
 
 <div class="inner">
@@ -287,7 +288,6 @@ function initApp() {
   var outputFilename = 'manifest.kml';
   var aborted = false;
 
-  dropZone.addEventListener('click', function() { fileInput.click(); });
   dropZone.addEventListener('dragover', function(e) { e.preventDefault(); dropZone.classList.add('drag-over'); });
   dropZone.addEventListener('dragleave', function() { dropZone.classList.remove('drag-over'); });
   dropZone.addEventListener('drop', function(e) {
