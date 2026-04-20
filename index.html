@@ -146,7 +146,15 @@ var sfail=document.getElementById('sfail');
 var uploadArea=document.getElementById('upload-area');
 
 fi.addEventListener('change',function(e){
-  if(e.target.files&&e.target.files[0]) processFile(e.target.files[0]);
+  var f=e.target.files&&e.target.files[0];
+  if(!f){showErr('No file was received. Please try again.');return;}
+  uploadArea.style.display='none';
+  scard.classList.add('show');
+  sicon.className='s-icon loading';
+  sicon.innerHTML='<div class="spinner"></div>';
+  stitle.textContent='FILE RECEIVED';
+  sdetail.textContent=f.name+' - '+Math.round(f.size/1024)+'KB';
+  setTimeout(function(){processFile(f);},300);
 });
 
 resetlnk.addEventListener('click',function(){
