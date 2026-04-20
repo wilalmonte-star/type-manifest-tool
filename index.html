@@ -5,12 +5,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Manifest → KML Converter</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
 <style>
   :root {
     --bg: #0a0010;
-    --surface: #110020;
     --purple: #9b30ff;
     --purple-dim: #6a1fb5;
     --orange: #ff6a00;
@@ -21,191 +19,141 @@
     --success: #00ffcc;
     --grid: rgba(155,48,255,0.07);
   }
-
-- { margin:0; padding:0; box-sizing:border-box; }
-
-body {
-background: var(–bg);
-color: var(–text);
-font-family: ‘Share Tech Mono’, monospace;
-min-height: 100vh;
-display: flex;
-flex-direction: column;
-align-items: center;
-justify-content: center;
-padding: 24px;
-overflow-x: hidden;
-position: relative;
-}
-
-body::before {
-content:’’;position:fixed;inset:0;
-background-image: linear-gradient(var(–grid) 1px,transparent 1px), linear-gradient(90deg,var(–grid) 1px,transparent 1px);
-background-size:36px 36px;pointer-events:none;z-index:0;
-}
-body::after {
-content:’’;position:fixed;inset:0;
-background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.12) 2px,rgba(0,0,0,0.12) 4px);
-pointer-events:none;z-index:0;
-}
-
-.orb { position:fixed;border-radius:50%;filter:blur(80px);pointer-events:none;z-index:0; }
-.orb-1 { width:400px;height:400px;background:rgba(155,48,255,0.18);top:-100px;left:-100px;animation:drift1 8s ease-in-out infinite alternate; }
-.orb-2 { width:300px;height:300px;background:rgba(255,106,0,0.15);bottom:-80px;right:-80px;animation:drift2 10s ease-in-out infinite alternate; }
-@keyframes drift1 { to { transform:translate(40px,30px); } }
-@keyframes drift2 { to { transform:translate(-30px,-40px); } }
-
-.container { width:100%;max-width:600px;position:relative;z-index:1; }
-
-header { margin-bottom:28px;text-align:center; }
-
-.retro-tag {
-display:inline-block;font-family:‘Press Start 2P’,monospace;font-size:7px;
-letter-spacing:0.15em;color:var(–orange-bright);border:1px solid var(–orange);
-padding:5px 14px;margin-bottom:16px;position:relative;
-text-shadow:0 0 8px var(–orange);box-shadow:0 0 10px rgba(255,106,0,0.3),inset 0 0 10px rgba(255,106,0,0.05);
-}
-.retro-tag::before { content:‘▶’;position:absolute;top:50%;left:-16px;transform:translateY(-50%);color:var(–orange);font-size:8px; }
-.retro-tag::after  { content:‘◀’;position:absolute;top:50%;right:-16px;transform:translateY(-50%);color:var(–orange);font-size:8px; }
-
-h1 {
-font-family:‘Orbitron’,sans-serif;font-weight:900;font-size:clamp(26px,6vw,48px);
-line-height:1.1;letter-spacing:0.05em;
-background:linear-gradient(135deg,var(–orange-bright) 0%,var(–orange) 40%,var(–purple) 100%);
--webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
-filter:drop-shadow(0 0 20px rgba(155,48,255,0.5));
-animation:titlePulse 3s ease-in-out infinite alternate;
-}
-@keyframes titlePulse {
-from { filter:drop-shadow(0 0 15px rgba(155,48,255,0.4)); }
-to   { filter:drop-shadow(0 0 30px rgba(255,106,0,0.6)); }
-}
-.subtitle { margin-top:8px;font-size:10px;color:var(–muted);letter-spacing:0.08em;text-transform:uppercase; }
-
-.panel {
-background:linear-gradient(145deg,rgba(30,0,60,0.9),rgba(15,0,30,0.95));
-border:1px solid var(–purple-dim);border-radius:4px;
-box-shadow:0 0 0 1px rgba(155,48,255,0.1),0 0 30px rgba(155,48,255,0.15),inset 0 1px 0 rgba(155,48,255,0.2);
-overflow:hidden;position:relative;
-}
-.panel::before {
-content:’’;position:absolute;top:0;left:0;right:0;height:2px;
-background:linear-gradient(90deg,transparent,var(–purple),var(–orange),transparent);
-animation:scanLine 3s linear infinite;
-}
-@keyframes scanLine { 0%{opacity:1}50%{opacity:0.4}100%{opacity:1} }
-
-.corner { position:absolute;width:12px;height:12px;border-color:var(–orange);border-style:solid;z-index:2; }
-.corner-tl { top:-1px;left:-1px;border-width:2px 0 0 2px; }
-.corner-tr { top:-1px;right:-1px;border-width:2px 2px 0 0; }
-.corner-bl { bottom:-1px;left:-1px;border-width:0 0 2px 2px; }
-.corner-br { bottom:-1px;right:-1px;border-width:0 2px 2px 0; }
-
-/* Drop zone */
-.drop-zone { padding:40px 32px;text-align:center;cursor:pointer;transition:all 0.25s ease;position:relative; }
-.drop-zone:hover,.drop-zone.drag-over { background:rgba(155,48,255,0.06); }
-.drop-zone:hover .drop-icon-wrap { transform:translateY(-4px);box-shadow:0 0 30px rgba(155,48,255,0.5); }
-
-.drop-icon-wrap {
-width:64px;height:64px;margin:0 auto 16px;border:2px solid var(–purple);border-radius:4px;
-display:flex;align-items:center;justify-content:center;background:rgba(155,48,255,0.1);
-box-shadow:0 0 16px rgba(155,48,255,0.3);transition:all 0.25s ease;position:relative;
-}
-.drop-icon-wrap::after { content:’’;position:absolute;inset:-4px;border:1px solid rgba(155,48,255,0.2);border-radius:6px; }
-.drop-icon-wrap svg { width:28px;height:28px;stroke:var(–purple);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;filter:drop-shadow(0 0 6px var(–purple)); }
-
-.drop-text { font-family:‘Orbitron’,sans-serif;font-size:13px;font-weight:700;color:var(–text);margin-bottom:6px;letter-spacing:0.06em; }
-.drop-sub  { font-size:11px;color:var(–muted);letter-spacing:0.05em; }
-.drop-sub span { color:var(–orange-bright);text-shadow:0 0 8px var(–orange); }
-#file-input { display:none; }
-
-/* Inner padding wrapper */
-.inner { padding:0 18px 18px; }
-
-/* Status card */
-.status-card { margin-top:12px;padding:14px 18px;display:none;align-items:center;gap:14px; }
-.status-card.visible { display:flex; }
-
-.status-icon { width:38px;height:38px;border-radius:4px;display:flex;align-items:center;justify-content:center;flex-shrink:0;border:1px solid var(–purple-dim); }
-.status-icon.loading { background:rgba(155,48,255,0.1); }
-.status-icon.success { background:rgba(0,255,204,0.08);border-color:var(–success); }
-.status-icon.error   { background:rgba(255,45,120,0.08);border-color:var(–pink); }
-
-.spinner { width:18px;height:18px;border:2px solid rgba(155,48,255,0.2);border-top-color:var(–purple);border-radius:50%;animation:spin 0.8s linear infinite;box-shadow:0 0 8px var(–purple); }
-@keyframes spin { to { transform:rotate(360deg); } }
-
-.status-text { flex:1; }
-.status-title  { font-family:‘Orbitron’,sans-serif;font-size:11px;font-weight:700;letter-spacing:0.05em;margin-bottom:3px;color:var(–text); }
-.status-detail { font-size:10px;color:var(–muted);letter-spacing:0.03em; }
-
-/* Progress bar */
-.progress-wrap { margin-top:10px;background:rgba(155,48,255,0.1);border:1px solid rgba(155,48,255,0.2);border-radius:2px;overflow:hidden;height:6px;display:none; }
-.progress-wrap.visible { display:block; }
-.progress-bar { height:100%;width:0%;background:linear-gradient(90deg,var(–purple),var(–orange));transition:width 0.3s ease;box-shadow:0 0 8px var(–purple); }
-
-.progress-label { margin-top:5px;font-size:9px;color:var(–muted);text-align:right;letter-spacing:0.05em;display:none; }
-.progress-label.visible { display:block; }
-
-/* Preview */
-.preview-section { margin-top:12px;display:none; }
-.preview-section.visible { display:block; }
-
-.preview-header { display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;padding:0 2px; }
-.preview-label-txt { font-family:‘Press Start 2P’,monospace;font-size:7px;letter-spacing:0.1em;color:var(–muted);text-transform:uppercase; }
-.count-badge { font-family:‘Orbitron’,sans-serif;font-size:10px;font-weight:700;color:var(–orange-bright);background:rgba(255,106,0,0.1);border:1px solid rgba(255,106,0,0.3);padding:3px 10px;border-radius:2px;text-shadow:0 0 8px var(–orange);box-shadow:0 0 10px rgba(255,106,0,0.15); }
-
-.preview-box {
-background:rgba(5,0,12,0.8);border:1px solid rgba(155,48,255,0.25);border-radius:4px;
-padding:12px 14px;max-height:180px;overflow-y:auto;font-size:10.5px;line-height:1.9;
-color:rgba(200,170,255,0.75);box-shadow:inset 0 0 20px rgba(155,48,255,0.05);
-}
-.preview-box::-webkit-scrollbar { width:4px; }
-.preview-box::-webkit-scrollbar-track { background:transparent; }
-.preview-box::-webkit-scrollbar-thumb { background:var(–purple-dim);border-radius:2px; }
-
-.addr-row { display:flex;gap:8px;align-items:baseline;border-bottom:1px solid rgba(155,48,255,0.08);padding:2px 0;opacity:0;animation:fadeUp 0.3s forwards; }
-.addr-row:last-child { border-bottom:none; }
-.addr-num { color:var(–purple);font-size:9px;min-width:22px;flex-shrink:0; }
-.addr-text { flex:1; }
-.addr-coords { font-size:9px;color:rgba(0,255,204,0.5);flex-shrink:0;white-space:nowrap; }
-.addr-fail  { font-size:9px;color:rgba(255,45,120,0.5);flex-shrink:0; }
-
-@keyframes fadeUp { from{opacity:0;transform:translateX(-6px)}to{opacity:1;transform:translateX(0)} }
-
-/* Download button */
-.download-btn {
-margin-top:14px;width:100%;padding:16px;background:transparent;
-border:2px solid var(–orange);border-radius:4px;color:var(–orange-bright);
-font-family:‘Orbitron’,sans-serif;font-size:12px;font-weight:900;letter-spacing:0.1em;
-cursor:pointer;display:none;align-items:center;justify-content:center;gap:10px;
-transition:all 0.2s ease;text-shadow:0 0 10px var(–orange);
-box-shadow:0 0 20px rgba(255,106,0,0.2),inset 0 0 20px rgba(255,106,0,0.05);
-position:relative;overflow:hidden;text-transform:uppercase;
-}
-.download-btn::before { content:’’;position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,106,0,0.08),transparent);transform:translateX(-100%);transition:transform 0.4s ease; }
-.download-btn:hover::before { transform:translateX(100%); }
-.download-btn:hover { background:rgba(255,106,0,0.08);box-shadow:0 0 40px rgba(255,106,0,0.4),inset 0 0 20px rgba(255,106,0,0.1);transform:translateY(-2px); }
-.download-btn:active { transform:translateY(0); }
-.download-btn.visible { display:flex; }
-.download-btn svg { width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;filter:drop-shadow(0 0 4px var(–orange)); }
-
-/* Stats row */
-.stats-row { display:flex;gap:10px;margin-top:10px; }
-.stat-box { flex:1;background:rgba(155,48,255,0.06);border:1px solid rgba(155,48,255,0.2);border-radius:4px;padding:8px 12px;text-align:center; }
-.stat-val { font-family:‘Orbitron’,sans-serif;font-size:18px;font-weight:900;color:var(–orange-bright);text-shadow:0 0 10px var(–orange); }
-.stat-lbl { font-family:‘Press Start 2P’,monospace;font-size:6px;color:var(–muted);margin-top:3px;letter-spacing:0.08em; }
-.stat-val.ok  { color:var(–success);text-shadow:0 0 10px var(–success); }
-.stat-val.bad { color:var(–pink);text-shadow:0 0 10px var(–pink); }
-
-.reset-link { display:block;text-align:center;margin-top:14px;font-size:10px;color:var(–muted);cursor:pointer;letter-spacing:0.08em;text-transform:uppercase;transition:color 0.2s; }
-.reset-link:hover { color:var(–purple);text-shadow:0 0 8px var(–purple); }
-
-.error-msg { margin-top:12px;padding:12px 16px;background:rgba(255,45,120,0.06);border:1px solid rgba(255,45,120,0.25);border-radius:4px;font-size:11px;color:var(–pink);display:none;text-shadow:0 0 6px var(–pink); }
-.error-msg.visible { display:block; }
-
-footer { margin-top:28px;text-align:center;font-family:‘Press Start 2P’,monospace;font-size:6px;color:rgba(155,48,255,0.3);letter-spacing:0.15em;text-transform:uppercase; }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    background:var(--bg); color:var(--text);
+    font-family:'Share Tech Mono',monospace;
+    min-height:100vh; display:flex; flex-direction:column;
+    align-items:center; justify-content:center;
+    padding:24px; overflow-x:hidden; position:relative;
+  }
+  body::before {
+    content:''; position:fixed; inset:0;
+    background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);
+    background-size:36px 36px; pointer-events:none; z-index:0;
+  }
+  body::after {
+    content:''; position:fixed; inset:0;
+    background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.12) 2px,rgba(0,0,0,0.12) 4px);
+    pointer-events:none; z-index:0;
+  }
+  .orb { position:fixed; border-radius:50%; filter:blur(80px); pointer-events:none; z-index:0; }
+  .orb-1 { width:400px;height:400px;background:rgba(155,48,255,0.18);top:-100px;left:-100px;animation:drift1 8s ease-in-out infinite alternate; }
+  .orb-2 { width:300px;height:300px;background:rgba(255,106,0,0.15);bottom:-80px;right:-80px;animation:drift2 10s ease-in-out infinite alternate; }
+  @keyframes drift1 { to{transform:translate(40px,30px);} }
+  @keyframes drift2 { to{transform:translate(-30px,-40px);} }
+  .container { width:100%; max-width:600px; position:relative; z-index:1; }
+  header { margin-bottom:28px; text-align:center; }
+  .retro-tag {
+    display:inline-block; font-family:'Press Start 2P',monospace; font-size:7px;
+    letter-spacing:0.15em; color:var(--orange-bright); border:1px solid var(--orange);
+    padding:5px 14px; margin-bottom:16px; position:relative;
+    text-shadow:0 0 8px var(--orange); box-shadow:0 0 10px rgba(255,106,0,0.3),inset 0 0 10px rgba(255,106,0,0.05);
+  }
+  .retro-tag::before { content:'▶'; position:absolute; top:50%; left:-16px; transform:translateY(-50%); color:var(--orange); font-size:8px; }
+  .retro-tag::after  { content:'◀'; position:absolute; top:50%; right:-16px; transform:translateY(-50%); color:var(--orange); font-size:8px; }
+  h1 {
+    font-family:'Orbitron',sans-serif; font-weight:900; font-size:clamp(26px,6vw,48px);
+    line-height:1.1; letter-spacing:0.05em;
+    background:linear-gradient(135deg,var(--orange-bright) 0%,var(--orange) 40%,var(--purple) 100%);
+    -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+    animation:titlePulse 3s ease-in-out infinite alternate;
+  }
+  @keyframes titlePulse {
+    from{filter:drop-shadow(0 0 15px rgba(155,48,255,0.4));}
+    to{filter:drop-shadow(0 0 30px rgba(255,106,0,0.6));}
+  }
+  .subtitle { margin-top:8px; font-size:10px; color:var(--muted); letter-spacing:0.08em; text-transform:uppercase; }
+  .panel {
+    background:linear-gradient(145deg,rgba(30,0,60,0.9),rgba(15,0,30,0.95));
+    border:1px solid var(--purple-dim); border-radius:4px;
+    box-shadow:0 0 0 1px rgba(155,48,255,0.1),0 0 30px rgba(155,48,255,0.15),inset 0 1px 0 rgba(155,48,255,0.2);
+    overflow:hidden; position:relative;
+  }
+  .panel::before {
+    content:''; position:absolute; top:0; left:0; right:0; height:2px;
+    background:linear-gradient(90deg,transparent,var(--purple),var(--orange),transparent);
+    animation:scanLine 3s linear infinite;
+  }
+  @keyframes scanLine { 0%{opacity:1}50%{opacity:0.4}100%{opacity:1} }
+  .corner { position:absolute; width:12px; height:12px; border-color:var(--orange); border-style:solid; z-index:2; }
+  .corner-tl { top:-1px;left:-1px;border-width:2px 0 0 2px; }
+  .corner-tr { top:-1px;right:-1px;border-width:2px 2px 0 0; }
+  .corner-bl { bottom:-1px;left:-1px;border-width:0 0 2px 2px; }
+  .corner-br { bottom:-1px;right:-1px;border-width:0 2px 2px 0; }
+  .drop-zone { padding:40px 32px; text-align:center; cursor:pointer; transition:all 0.25s ease; position:relative; }
+  .drop-zone:hover,.drop-zone.drag-over { background:rgba(155,48,255,0.06); }
+  .drop-zone:hover .drop-icon-wrap { transform:translateY(-4px); box-shadow:0 0 30px rgba(155,48,255,0.5); }
+  .drop-icon-wrap {
+    width:64px; height:64px; margin:0 auto 16px; border:2px solid var(--purple); border-radius:4px;
+    display:flex; align-items:center; justify-content:center; background:rgba(155,48,255,0.1);
+    box-shadow:0 0 16px rgba(155,48,255,0.3); transition:all 0.25s ease; position:relative;
+  }
+  .drop-icon-wrap::after { content:''; position:absolute; inset:-4px; border:1px solid rgba(155,48,255,0.2); border-radius:6px; }
+  .drop-icon-wrap svg { width:28px;height:28px;stroke:var(--purple);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;filter:drop-shadow(0 0 6px var(--purple)); }
+  .drop-text { font-family:'Orbitron',sans-serif; font-size:13px; font-weight:700; color:var(--text); margin-bottom:6px; letter-spacing:0.06em; }
+  .drop-sub  { font-size:11px; color:var(--muted); letter-spacing:0.05em; }
+  .drop-sub span { color:var(--orange-bright); text-shadow:0 0 8px var(--orange); }
+  #file-input { display:none; }
+  .inner { padding:0 18px 18px; }
+  .status-card { margin-top:12px; padding:14px 18px; display:none; align-items:center; gap:14px; }
+  .status-card.visible { display:flex; }
+  .status-icon { width:38px;height:38px;border-radius:4px;display:flex;align-items:center;justify-content:center;flex-shrink:0;border:1px solid var(--purple-dim); }
+  .status-icon.loading { background:rgba(155,48,255,0.1); }
+  .status-icon.success { background:rgba(0,255,204,0.08);border-color:var(--success); }
+  .status-icon.error   { background:rgba(255,45,120,0.08);border-color:var(--pink); }
+  .spinner { width:18px;height:18px;border:2px solid rgba(155,48,255,0.2);border-top-color:var(--purple);border-radius:50%;animation:spin 0.8s linear infinite;box-shadow:0 0 8px var(--purple); }
+  @keyframes spin { to{transform:rotate(360deg);} }
+  .status-text { flex:1; }
+  .status-title  { font-family:'Orbitron',sans-serif;font-size:11px;font-weight:700;letter-spacing:0.05em;margin-bottom:3px;color:var(--text); }
+  .status-detail { font-size:10px;color:var(--muted);letter-spacing:0.03em; }
+  .progress-wrap { margin-top:10px;background:rgba(155,48,255,0.1);border:1px solid rgba(155,48,255,0.2);border-radius:2px;overflow:hidden;height:6px;display:none; }
+  .progress-wrap.visible { display:block; }
+  .progress-bar { height:100%;width:0%;background:linear-gradient(90deg,var(--purple),var(--orange));transition:width 0.3s ease;box-shadow:0 0 8px var(--purple); }
+  .progress-label { margin-top:5px;font-size:9px;color:var(--muted);text-align:right;letter-spacing:0.05em;display:none; }
+  .progress-label.visible { display:block; }
+  .preview-section { margin-top:12px; display:none; }
+  .preview-section.visible { display:block; }
+  .preview-header { display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;padding:0 2px; }
+  .preview-label-txt { font-family:'Press Start 2P',monospace;font-size:7px;letter-spacing:0.1em;color:var(--muted);text-transform:uppercase; }
+  .count-badge { font-family:'Orbitron',sans-serif;font-size:10px;font-weight:700;color:var(--orange-bright);background:rgba(255,106,0,0.1);border:1px solid rgba(255,106,0,0.3);padding:3px 10px;border-radius:2px;text-shadow:0 0 8px var(--orange); }
+  .preview-box { background:rgba(5,0,12,0.8);border:1px solid rgba(155,48,255,0.25);border-radius:4px;padding:12px 14px;max-height:180px;overflow-y:auto;font-size:10.5px;line-height:1.9;color:rgba(200,170,255,0.75); }
+  .preview-box::-webkit-scrollbar { width:4px; }
+  .preview-box::-webkit-scrollbar-thumb { background:var(--purple-dim);border-radius:2px; }
+  .addr-row { display:flex;gap:8px;align-items:baseline;border-bottom:1px solid rgba(155,48,255,0.08);padding:2px 0; }
+  .addr-row:last-child { border-bottom:none; }
+  .addr-num { color:var(--purple);font-size:9px;min-width:22px;flex-shrink:0; }
+  .addr-text { flex:1; }
+  .addr-coords { font-size:9px;color:rgba(0,255,204,0.5);flex-shrink:0;white-space:nowrap; }
+  .addr-fail  { font-size:9px;color:rgba(255,45,120,0.5);flex-shrink:0; }
+  .stats-row { display:flex;gap:10px;margin-top:10px; }
+  .stat-box { flex:1;background:rgba(155,48,255,0.06);border:1px solid rgba(155,48,255,0.2);border-radius:4px;padding:8px 12px;text-align:center; }
+  .stat-val { font-family:'Orbitron',sans-serif;font-size:18px;font-weight:900;color:var(--orange-bright);text-shadow:0 0 10px var(--orange); }
+  .stat-lbl { font-family:'Press Start 2P',monospace;font-size:6px;color:var(--muted);margin-top:3px;letter-spacing:0.08em; }
+  .stat-val.ok  { color:var(--success);text-shadow:0 0 10px var(--success); }
+  .stat-val.bad { color:var(--pink);text-shadow:0 0 10px var(--pink); }
+  .download-btn {
+    margin-top:14px;width:100%;padding:16px;background:transparent;
+    border:2px solid var(--orange);border-radius:4px;color:var(--orange-bright);
+    font-family:'Orbitron',sans-serif;font-size:12px;font-weight:900;letter-spacing:0.1em;
+    cursor:pointer;display:none;align-items:center;justify-content:center;gap:10px;
+    transition:all 0.2s ease;text-shadow:0 0 10px var(--orange);
+    box-shadow:0 0 20px rgba(255,106,0,0.2),inset 0 0 20px rgba(255,106,0,0.05);
+    position:relative;overflow:hidden;text-transform:uppercase;
+  }
+  .download-btn::before { content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,106,0,0.08),transparent);transform:translateX(-100%);transition:transform 0.4s ease; }
+  .download-btn:hover::before { transform:translateX(100%); }
+  .download-btn:hover { background:rgba(255,106,0,0.08);transform:translateY(-2px); }
+  .download-btn.visible { display:flex; }
+  .download-btn svg { width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round; }
+  .reset-link { display:block;text-align:center;margin-top:14px;font-size:10px;color:var(--muted);cursor:pointer;letter-spacing:0.08em;text-transform:uppercase;transition:color 0.2s; }
+  .reset-link:hover { color:var(--purple); }
+  .error-msg { margin-top:12px;padding:12px 16px;background:rgba(255,45,120,0.06);border:1px solid rgba(255,45,120,0.25);border-radius:4px;font-size:11px;color:var(--pink);display:none; }
+  .error-msg.visible { display:block; }
+  footer { margin-top:28px;text-align:center;font-family:'Press Start 2P',monospace;font-size:6px;color:rgba(155,48,255,0.3);letter-spacing:0.15em;text-transform:uppercase; }
+  .lib-status { font-size:9px; text-align:center; margin-bottom:8px; color:var(--muted); display:none; }
+  .lib-status.visible { display:block; }
 </style>
-
 </head>
 <body>
 
@@ -218,6 +166,8 @@ footer { margin-top:28px;text-align:center;font-family:‘Press Start 2P’,mono
     <h1>MANIFEST<br>→ KML</h1>
     <p class="subtitle">Extract · Geocode · Export to Google Earth / Maps</p>
   </header>
+
+  <div class="lib-status" id="lib-status">⚠ Loading XLSX library…</div>
 
   <div class="panel">
     <div class="corner corner-tl"></div>
@@ -237,29 +187,23 @@ footer { margin-top:28px;text-align:center;font-family:‘Press Start 2P’,mono
 
 <div class="inner">
   <div class="status-card" id="status-card">
-    <div class="status-icon loading" id="status-icon">
-      <div class="spinner"></div>
-    </div>
+    <div class="status-icon loading" id="status-icon"><div class="spinner"></div></div>
     <div class="status-text">
       <div class="status-title" id="status-title">PROCESSING…</div>
       <div class="status-detail" id="status-detail">Reading Stop Details sheet</div>
     </div>
   </div>
 
-  <div class="progress-wrap" id="progress-wrap">
-    <div class="progress-bar" id="progress-bar"></div>
-  </div>
+  <div class="progress-wrap" id="progress-wrap"><div class="progress-bar" id="progress-bar"></div></div>
   <div class="progress-label" id="progress-label">0 / 0 geocoded</div>
-
   <div class="error-msg" id="error-msg"></div>
 
   <div class="preview-section" id="preview-section">
-    <div class="stats-row" id="stats-row">
+    <div class="stats-row">
       <div class="stat-box"><div class="stat-val" id="stat-total">0</div><div class="stat-lbl">TOTAL</div></div>
       <div class="stat-box"><div class="stat-val ok" id="stat-ok">0</div><div class="stat-lbl">GEOCODED</div></div>
       <div class="stat-box"><div class="stat-val bad" id="stat-fail">0</div><div class="stat-lbl">FAILED</div></div>
     </div>
-
     <div class="preview-header" style="margin-top:12px;">
       <span class="preview-label-txt">Address Results</span>
       <span class="count-badge" id="count-badge">0 STOPS</span>
@@ -281,43 +225,79 @@ footer { margin-top:28px;text-align:center;font-family:‘Press Start 2P’,mono
 
 <footer>Combined Manifest &nbsp;·&nbsp; Geocode + KML &nbsp;·&nbsp; 2026</footer>
 
+<!-- Load XLSX from CDN with fallback -->
+
 <script>
-  const dropZone      = document.getElementById('drop-zone');
-  const fileInput     = document.getElementById('file-input');
-  const statusCard    = document.getElementById('status-card');
-  const statusIcon    = document.getElementById('status-icon');
-  const statusTitle   = document.getElementById('status-title');
-  const statusDetail  = document.getElementById('status-detail');
-  const progressWrap  = document.getElementById('progress-wrap');
-  const progressBar   = document.getElementById('progress-bar');
-  const progressLabel = document.getElementById('progress-label');
-  const previewSection= document.getElementById('preview-section');
-  const previewBox    = document.getElementById('preview-box');
-  const countBadge    = document.getElementById('count-badge');
-  const downloadBtn   = document.getElementById('download-btn');
-  const resetLink     = document.getElementById('reset-link');
-  const errorMsg      = document.getElementById('error-msg');
-  const statTotal     = document.getElementById('stat-total');
-  const statOk        = document.getElementById('stat-ok');
-  const statFail      = document.getElementById('stat-fail');
+(function() {
+  var libStatus = document.getElementById('lib-status');
 
-  let kmlContent = '';
-  let outputFilename = 'manifest.kml';
-  let aborted = false;
+  function loadScript(src, onload, onerror) {
+    var s = document.createElement('script');
+    s.src = src;
+    s.onload = onload;
+    s.onerror = onerror;
+    document.head.appendChild(s);
+  }
 
-  // ── Drag & drop ──
-  dropZone.addEventListener('click', () => fileInput.click());
-  dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('drag-over'); });
-  dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drag-over'));
-  dropZone.addEventListener('drop', e => {
+  var cdns = [
+    'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js',
+    'https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js',
+    'https://unpkg.com/xlsx@0.18.5/dist/xlsx.full.min.js'
+  ];
+
+  var idx = 0;
+  function tryNext() {
+    if (idx >= cdns.length) {
+      libStatus.textContent = '❌ Could not load XLSX library. Check your internet connection.';
+      libStatus.style.color = 'var(--pink)';
+      libStatus.classList.add('visible');
+      return;
+    }
+    loadScript(cdns[idx++], function() {
+      libStatus.classList.remove('visible');
+      initApp();
+    }, tryNext);
+  }
+  tryNext();
+})();
+</script>
+
+<script>
+function initApp() {
+  var dropZone     = document.getElementById('drop-zone');
+  var fileInput    = document.getElementById('file-input');
+  var statusCard   = document.getElementById('status-card');
+  var statusIcon   = document.getElementById('status-icon');
+  var statusTitle  = document.getElementById('status-title');
+  var statusDetail = document.getElementById('status-detail');
+  var progressWrap = document.getElementById('progress-wrap');
+  var progressBar  = document.getElementById('progress-bar');
+  var progressLabel= document.getElementById('progress-label');
+  var previewSection=document.getElementById('preview-section');
+  var previewBox   = document.getElementById('preview-box');
+  var countBadge   = document.getElementById('count-badge');
+  var downloadBtn  = document.getElementById('download-btn');
+  var resetLink    = document.getElementById('reset-link');
+  var errorMsg     = document.getElementById('error-msg');
+  var statTotal    = document.getElementById('stat-total');
+  var statOk       = document.getElementById('stat-ok');
+  var statFail     = document.getElementById('stat-fail');
+
+  var kmlContent = '';
+  var outputFilename = 'manifest.kml';
+  var aborted = false;
+
+  dropZone.addEventListener('click', function() { fileInput.click(); });
+  dropZone.addEventListener('dragover', function(e) { e.preventDefault(); dropZone.classList.add('drag-over'); });
+  dropZone.addEventListener('dragleave', function() { dropZone.classList.remove('drag-over'); });
+  dropZone.addEventListener('drop', function(e) {
     e.preventDefault(); dropZone.classList.remove('drag-over');
     if (e.dataTransfer.files[0]) processFile(e.dataTransfer.files[0]);
   });
-  fileInput.addEventListener('change', e => { if (e.target.files[0]) processFile(e.target.files[0]); });
+  fileInput.addEventListener('change', function(e) { if (e.target.files[0]) processFile(e.target.files[0]); });
 
-  resetLink.addEventListener('click', () => {
-    aborted = true;
-    kmlContent = '';
+  resetLink.addEventListener('click', function() {
+    aborted = true; kmlContent = '';
     previewSection.classList.remove('visible');
     downloadBtn.classList.remove('visible');
     statusCard.classList.remove('visible');
@@ -339,70 +319,47 @@ footer { margin-top:28px;text-align:center;font-family:‘Press Start 2P’,mono
     resetLink.style.display = 'block';
   }
 
-  // ── Geocode one address via Nominatim (free, no key needed) ──
-  async function geocode(address) {
-    const url = `https://nominatim.openstreetmap.org/search?format=json&limit=1&q=${encodeURIComponent(address)}`;
-    try {
-      const res = await fetch(url, { headers: { 'Accept-Language': 'en' } });
-      const data = await res.json();
+  function geocode(address) {
+    return fetch('https://nominatim.openstreetmap.org/search?format=json&limit=1&q=' + encodeURIComponent(address), {
+      headers: { 'Accept-Language': 'en' }
+    })
+    .then(function(res) { return res.json(); })
+    .then(function(data) {
       if (data && data.length > 0) {
-        return { lat: parseFloat(data[0].lat), lon: parseFloat(data[0].lon), display: data[0].display_name };
+        return { lat: parseFloat(data[0].lat), lon: parseFloat(data[0].lon) };
       }
-    } catch (e) { /* fall through */ }
-    return null;
+      return null;
+    })
+    .catch(function() { return null; });
   }
 
-  // ── Delay helper to respect Nominatim rate limit (1 req/sec) ──
-  function delay(ms) { return new Promise(r => setTimeout(r, ms)); }
+  function delay(ms) { return new Promise(function(r) { setTimeout(r, ms); }); }
 
-  // ── Build KML string ──
-  function buildKML(stops, filename) {
-    const esc = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-    const date = new Date().toLocaleDateString('en-US');
-    let kml = `<?xml version="1.0" encoding="UTF-8"?>
-<kml xmlns="http://www.opengis.net/kml/2.2">
-<Document>
-  <name>${esc(filename)} – ${date}</name>
-  <description>${stops.filter(s=>s.geo).length} of ${stops.length} stops geocoded</description>
-  <Style id="deliveryPin">
-    <IconStyle>
-      <color>ff0050ff</color>
-      <scale>1.1</scale>
-      <Icon><href>http://maps.google.com/mapfiles/kml/paddle/red-circle.png</href></Icon>
-    </IconStyle>
-    <LabelStyle><scale>0.8</scale></LabelStyle>
-  </Style>
+  function esc(s) {
+    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
 
-  <Style id="failPin">
-    <IconStyle>
-      <color>ff0000aa</color>
-      <scale>0.8</scale>
-      <Icon><href>http://maps.google.com/mapfiles/kml/paddle/grn-circle.png</href></Icon>
-    </IconStyle>
-    <LabelStyle><scale>0.7</scale></LabelStyle>
-  </Style>\n`;
+  function buildKML(stops, name) {
+    var kml = '<?xml version="1.0" encoding="UTF-8"?>\n<kml xmlns="http://www.opengis.net/kml/2.2">\n<Document>\n';
+    kml += '  <name>' + esc(name) + '</name>\n';
+    kml += '  <Style id="pin"><IconStyle><color>ff0050ff</color><scale>1.1</scale><Icon><href>http://maps.google.com/mapfiles/kml/paddle/red-circle.png</href></Icon></IconStyle></Style>\n';
 
 ```
-stops.forEach((stop, i) => {
+stops.forEach(function(stop, i) {
   if (!stop.geo) return;
-  kml += `  <Placemark>
-<name>Stop ${i + 1}</name>
-<description>${esc(stop.address)}</description>
-<styleUrl>#deliveryPin</styleUrl>
-<Point><coordinates>${stop.geo.lon},${stop.geo.lat},0</coordinates></Point>
-```
-
-</Placemark>\n`;
+  kml += '  <Placemark>\n';
+  kml += '    <name>Stop ' + (i+1) + '</name>\n';
+  kml += '    <description>' + esc(stop.address) + '</description>\n';
+  kml += '    <styleUrl>#pin</styleUrl>\n';
+  kml += '    <Point><coordinates>' + stop.geo.lon + ',' + stop.geo.lat + ',0</coordinates></Point>\n';
+  kml += '  </Placemark>\n';
 });
-
-```
-kml += `</Document>\n</kml>`;
+kml += '</Document>\n</kml>';
 return kml;
 ```
 
 }
 
-// ── Main ──
 async function processFile(file) {
 aborted = false;
 errorMsg.classList.remove(‘visible’);
@@ -410,52 +367,49 @@ previewSection.classList.remove(‘visible’);
 downloadBtn.classList.remove(‘visible’);
 resetLink.style.display = ‘none’;
 previewBox.innerHTML = ‘’;
+statusCard.classList.add(‘visible’);
+statusIcon.className = ‘status-icon loading’;
+statusIcon.innerHTML = ‘<div class="spinner"></div>’;
+statusTitle.textContent = ‘READING FILE…’;
+statusDetail.textContent = file.name;
+dropZone.style.display = ‘none’;
 
 ```
-statusCard.classList.add('visible');
-statusIcon.className = 'status-icon loading';
-statusIcon.innerHTML = '<div class="spinner"></div>';
-statusTitle.textContent = 'READING FILE…';
-statusDetail.textContent = file.name;
-dropZone.style.display = 'none';
-
-const baseName = file.name.replace(/\.(xls|xlsx)$/i, '');
+var baseName = file.name.replace(/\.(xls|xlsx)$/i, '');
 outputFilename = baseName + '.kml';
 
-const reader = new FileReader();
-reader.onload = async (e) => {
+var reader = new FileReader();
+reader.onload = async function(e) {
   try {
     statusTitle.textContent = 'PARSING WORKSHEET…';
-    statusDetail.textContent = 'Scanning for Stop Details sheet';
+    var data = new Uint8Array(e.target.result);
+    var workbook = XLSX.read(data, { type: 'array' });
 
-    const data = new Uint8Array(e.target.result);
-    const workbook = XLSX.read(data, { type: 'array' });
+    var sheetName = workbook.SheetNames.find(function(n) {
+      return n.toLowerCase().includes('stop') || n.toLowerCase().includes('detail');
+    }) || workbook.SheetNames[workbook.SheetNames.length - 1];
 
-    const sheetName = workbook.SheetNames.find(n =>
-      n.toLowerCase().includes('stop') || n.toLowerCase().includes('detail')
-    ) || workbook.SheetNames[workbook.SheetNames.length - 1];
+    var ws = workbook.Sheets[sheetName];
+    var rows = XLSX.utils.sheet_to_json(ws, { header: 1, defval: '' });
 
-    const ws = workbook.Sheets[sheetName];
-    const rows = XLSX.utils.sheet_to_json(ws, { header: 1, defval: '' });
+    if (!rows || rows.length < 2) { showError('No data found.'); return; }
 
-    if (!rows || rows.length < 2) { showError('No data found in the spreadsheet.'); return; }
+    var header = rows[0].map(function(h) { return String(h).toLowerCase().trim(); });
+    var a1 = header.findIndex(function(h) { return h.includes('address') && (h.includes('1') || h === 'address'); });
+    var a2 = header.findIndex(function(h) { return h.includes('address') && h.includes('2'); });
+    var ci = header.findIndex(function(h) { return h === 'city'; });
+    var st = header.findIndex(function(h) { return h === 'state' || h === 'state_code'; });
+    var zp = header.findIndex(function(h) { return h.includes('postal') || h.includes('zip'); });
 
-    const header = rows[0].map(h => String(h).toLowerCase().trim());
-    const a1 = header.findIndex(h => h.includes('address') && (h.includes('1') || h.includes('line 1') || h === 'address'));
-    const a2 = header.findIndex(h => h.includes('address') && h.includes('2'));
-    const ci = header.findIndex(h => h === 'city');
-    const st = header.findIndex(h => h === 'state' || h === 'state_code');
-    const zp = header.findIndex(h => h.includes('postal') || h.includes('zip'));
+    var c1=a1>=0?a1:3, c2=a2>=0?a2:4, cc=ci>=0?ci:5, cs=st>=0?st:6, cz=zp>=0?zp:7;
 
-    const c1 = a1>=0?a1:3, c2=a2>=0?a2:4, cc=ci>=0?ci:5, cs=st>=0?st:6, cz=zp>=0?zp:7;
-
-    const addresses = [];
-    for (let i = 1; i < rows.length; i++) {
-      const row = rows[i];
-      const v1 = String(row[c1]||'').trim(); if (!v1) continue;
-      const v2=String(row[c2]||'').trim(), vc=String(row[cc]||'').trim();
-      const vs=String(row[cs]||'').trim(), vz=String(row[cz]||'').trim();
-      let addr = v1;
+    var addresses = [];
+    for (var i = 1; i < rows.length; i++) {
+      var row = rows[i];
+      var v1 = String(row[c1]||'').trim(); if (!v1) continue;
+      var v2=String(row[c2]||'').trim(), vc=String(row[cc]||'').trim();
+      var vs=String(row[cs]||'').trim(), vz=String(row[cz]||'').trim();
+      var addr = v1;
       if (v2) addr += ' '+v2;
       if (vc) addr += ' '+vc;
       if (vs) addr += ', '+vs;
@@ -463,91 +417,70 @@ reader.onload = async (e) => {
       addresses.push(addr);
     }
 
-    if (!addresses.length) { showError("Could not find address columns. Make sure it's a Combined Manifest."); return; }
+    if (!addresses.length) { showError("No addresses found. Check it's a Combined Manifest file."); return; }
 
-    // ── Geocoding phase ──
-    statusTitle.textContent = 'GEOCODING ADDRESSES…';
-    statusDetail.textContent = `0 / ${addresses.length} — using OpenStreetMap`;
+    // Geocode
+    statusTitle.textContent = 'GEOCODING…';
     progressWrap.classList.add('visible');
     progressLabel.classList.add('visible');
     previewSection.classList.add('visible');
-    countBadge.textContent = `${addresses.length} STOPS`;
+    countBadge.textContent = addresses.length + ' STOPS';
     statTotal.textContent = addresses.length;
-    statOk.textContent = '0';
-    statFail.textContent = '0';
+    statOk.textContent = '0'; statFail.textContent = '0';
 
-    const stops = [];
-    let okCount = 0, failCount = 0;
+    var stops = [], okCount = 0, failCount = 0;
 
-    for (let i = 0; i < addresses.length; i++) {
+    for (var j = 0; j < addresses.length; j++) {
       if (aborted) return;
-
-      const addr = addresses[i];
-      const geo = await geocode(addr);
-
-      stops.push({ address: addr, geo });
-
+      var addr = addresses[j];
+      var geo = await geocode(addr);
+      stops.push({ address: addr, geo: geo });
       if (geo) okCount++; else failCount++;
 
-      // Update progress
-      const pct = Math.round(((i+1)/addresses.length)*100);
+      var pct = Math.round(((j+1)/addresses.length)*100);
       progressBar.style.width = pct + '%';
-      progressLabel.textContent = `${i+1} / ${addresses.length} geocoded`;
-      statusDetail.textContent = `Stop ${i+1}: ${addr.substring(0,40)}…`;
+      progressLabel.textContent = (j+1) + ' / ' + addresses.length + ' geocoded';
+      statusDetail.textContent = 'Stop ' + (j+1) + ': ' + addr.substring(0,40);
       statOk.textContent = okCount;
       statFail.textContent = failCount;
 
-      // Add row to preview
-      const div = document.createElement('div');
+      var div = document.createElement('div');
       div.className = 'addr-row';
-      div.style.animationDelay = '0ms';
-      div.innerHTML = `
-        <span class="addr-num">#${i+1}</span>
-        <span class="addr-text">${addr}</span>
-        ${geo
-          ? `<span class="addr-coords">${geo.lat.toFixed(4)}, ${geo.lon.toFixed(4)}</span>`
-          : `<span class="addr-fail">NO MATCH</span>`}
-      `;
+      div.innerHTML = '<span class="addr-num">#'+(j+1)+'</span>'
+        + '<span class="addr-text">'+addr+'</span>'
+        + (geo
+          ? '<span class="addr-coords">'+geo.lat.toFixed(4)+', '+geo.lon.toFixed(4)+'</span>'
+          : '<span class="addr-fail">NO MATCH</span>');
       previewBox.appendChild(div);
       previewBox.scrollTop = previewBox.scrollHeight;
 
-      // Nominatim rate limit: 1 request per second
-      if (i < addresses.length - 1) await delay(1100);
+      if (j < addresses.length - 1) await delay(1100);
     }
 
-    // ── Build & offer KML ──
     kmlContent = buildKML(stops, baseName);
-
     statusIcon.className = 'status-icon success';
-    statusIcon.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00ffcc" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="filter:drop-shadow(0 0 6px #00ffcc)"><polyline points="20 6 9 17 4 12"/></svg>`;
-    statusTitle.textContent = 'KML READY';
-    statusDetail.textContent = `${okCount} pins mapped · ${failCount} failed`;
-    progressBar.style.width = '100%';
-
+    statusIcon.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00ffcc" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
+    statusTitle.textContent = 'KML READY!';
+    statusDetail.textContent = okCount + ' pins mapped · ' + failCount + ' failed';
     downloadBtn.classList.add('visible');
     resetLink.style.display = 'block';
 
-  } catch (err) {
-    showError('Failed to process file: ' + err.message);
-  }
+  } catch(err) { showError('Error: ' + err.message); }
 };
-
-reader.onerror = () => showError('Could not read the file.');
+reader.onerror = function() { showError('Could not read file.'); };
 reader.readAsArrayBuffer(file);
 ```
 
 }
 
-downloadBtn.addEventListener(‘click’, () => {
+downloadBtn.addEventListener(‘click’, function() {
 if (!kmlContent) return;
-const encoded = ‘data:application/vnd.google-earth.kml+xml;charset=utf-8,’ + encodeURIComponent(kmlContent);
-const a = document.createElement(‘a’);
-a.href = encoded;
-a.download = outputFilename;
-document.body.appendChild(a);
-a.click();
-document.body.removeChild(a);
+var encoded = ‘data:application/vnd.google-earth.kml+xml;charset=utf-8,’ + encodeURIComponent(kmlContent);
+var a = document.createElement(‘a’);
+a.href = encoded; a.download = outputFilename;
+document.body.appendChild(a); a.click(); document.body.removeChild(a);
 });
+}
 </script>
 
 </body>
